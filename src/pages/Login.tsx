@@ -2,18 +2,18 @@ import { Button } from "@/components/ui/button";
 import { PixelCard } from "@/components/PixelCard";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Wallet, Smartphone } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useGlobalContext } from "../context";
 
 export default function Login() {
   const navigate = useNavigate();
   const [isConnecting, setIsConnecting] = useState(false);
-
+  const {updateCurrentWalletAddress} = useGlobalContext();
   const handleWalletConnect = async (walletType: string) => {
-    setIsConnecting(true);
-    
-    // Simulate wallet connection
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    setIsConnecting(true);  
+    const res = await updateCurrentWalletAddress();
+    console.log(res)
+    // Simulate wallet connection    
     // Navigate to home page after "connection"
     navigate("/home");
   };
