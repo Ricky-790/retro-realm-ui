@@ -6,7 +6,7 @@ import petDog from "@/assets/pet-dog.png";
 
 export default function Home() {
   const actionButtons = [
-    { icon: Sword, label: "Battle", color: "bg-destructive", href: "#" },
+    { icon: Sword, label: "Battle", color: "bg-destructive", href: "/battle" },
     { icon: Heart, label: "Feed", color: "bg-success", href: "#" },
     { icon: Trophy, label: "Train", color: "bg-warning", href: "#" },
   ];

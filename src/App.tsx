@@ -8,6 +8,9 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import CreateCharacter from "./pages/CreateCharacter";
 import Leaderboard from "./pages/Leaderboard";
+import Battle from "./pages/Battle";
+import BattleCreate from "./pages/BattleCreate";
+import BattleJoin from "./pages/BattleJoin";
 import NotFound from "./pages/NotFound";
 import { GlobalContextProvider } from "./context";
 
@@ -26,6 +29,9 @@ const App = () => (
             <Route path="/home" element={<Home />} />
             <Route path="/create-character" element={<CreateCharacter />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/battle" element={<Battle />} />
+            <Route path="/battle/create" element={<BattleCreate />} />
+            <Route path="/battle/join" element={<BattleJoin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
