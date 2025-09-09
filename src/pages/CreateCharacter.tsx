@@ -3,6 +3,15 @@ import { PixelCard } from "@/components/PixelCard";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Cat, Dog } from "lucide-react";
 import { useState, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import { uploadImageToIPFS } from "@/lib/ipfs";
@@ -39,6 +48,8 @@ export default function CreateCharacter() {
   });
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [isUploading, setIsUploading] = useState(false);
+  const [ipfsUrl, setIpfsUrl] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
   const petPreviewRef = useRef<HTMLDivElement>(null);
 
   const currentPetImage = petTypes.find(pet => pet.id === selectedPet)?.image || petDog;
@@ -61,9 +72,11 @@ export default function CreateCharacter() {
         useCORS: true
       });
       
-      const ipfsUrl = await uploadImageToIPFS(canvas);
-      toast.success(`Pet created and uploaded to IPFS!`);
-      console.log("IPFS URL:", ipfsUrl);
+  const url = await uploadImageToIPFS(canvas);
+  setIpfsUrl(url);
+  setShowDialog(true);
+  toast.success(`Pet created and uploaded to IPFS!`);
+  console.log("IPFS URL:", url);
     } catch (error) {
       console.error("Failed to create pet:", error);
       toast.error("Failed to create pet. Please check your Pinata API keys.");
@@ -73,7 +86,45 @@ export default function CreateCharacter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background p-4">
+    <>
+      {/* Modal Dialog for IPFS URL */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pet Image Uploaded!</DialogTitle>
+            <DialogDescription>
+              Your pet image has been uploaded to IPFS. You can copy the link below and keep it safe.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 mt-4">
+            <input
+              type="text"
+              value={ipfsUrl ?? ""}
+              readOnly
+              className="w-full px-2 py-1 border rounded bg-gray-100 text-sm"
+              onFocus={e => e.target.select()}
+            />
+            <button
+              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded font-bold hover:from-blue-600 hover:to-purple-600"
+              onClick={() => {
+                if (ipfsUrl) {
+                  navigator.clipboard.writeText(ipfsUrl);
+                  toast.success("Copied to clipboard!");
+                }
+              }}
+            >
+              Copy Link
+            </button>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <button className="mt-2 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Close</button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* ...existing code... */}
+      <div className="min-h-screen bg-gradient-background p-4">
       {/* Header */}
       <header className="flex items-center justify-between mb-6">
         <Button variant="pixel-outline" size="icon" asChild>
@@ -241,5 +292,8 @@ export default function CreateCharacter() {
         </div>
       </div>
     </div>
+  );
+      {/* ...existing code... */}
+    </>
   );
 }

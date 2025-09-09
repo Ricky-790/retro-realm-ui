@@ -1,17 +1,31 @@
-// Placeholder API keys - replace with actual values
-const PINATA_API_KEY = "YOUR_PINATA_API_KEY_HERE";
-const PINATA_SECRET_KEY = "YOUR_PINATA_SECRET_KEY_HERE";
+
+// Replace with your actual Pinata API keys
+const PINATA_API_KEY = "19b43211089848777257";
+const PINATA_SECRET_KEY = "4803cfc8fd33213df084e636a036bdc0263774bdc6444657b3797e1f16a18e70";
 
 export const uploadToIPFS = async (file: File): Promise<string> => {
+  const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
+  const formData = new FormData();
+  formData.append("file", file);
+
   try {
-    // Placeholder implementation - replace with actual Pinata SDK usage
-    console.log("Uploading to IPFS with Pinata API Key:", PINATA_API_KEY);
-    console.log("File:", file.name, file.size);
-    
-    // For now, return a placeholder URL
-    // In production, implement actual Pinata upload here
-    const mockHash = "QmExample" + Math.random().toString(36).substring(7);
-    return `https://gateway.pinata.cloud/ipfs/${mockHash}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        pinata_api_key: PINATA_API_KEY,
+        pinata_secret_api_key: PINATA_SECRET_KEY,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Pinata upload failed: ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json();
+    // The IPFS hash is in data.IpfsHash
+    return `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
   } catch (error) {
     console.error("Error uploading to IPFS:", error);
     throw new Error("Failed to upload to IPFS");
@@ -25,7 +39,6 @@ export const uploadImageToIPFS = async (canvas: HTMLCanvasElement): Promise<stri
         reject(new Error("Failed to create blob from canvas"));
         return;
       }
-      
       try {
         const file = new File([blob], "pet-image.png", { type: "image/png" });
         const ipfsUrl = await uploadToIPFS(file);
