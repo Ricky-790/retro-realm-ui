@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PixelCard } from "@/components/PixelCard";
 import { Link } from "react-router-dom";
@@ -5,8 +6,26 @@ import { Sword, Heart, Trophy, User, Package, ShoppingCart, Settings } from "luc
 import petDog from "@/assets/pet-dog.png";
 
 export default function Home() {
+  const [showBottomBar, setShowBottomBar] = useState(false);
+
+  useEffect(() => {
+    function handleMouseMove(event: MouseEvent) {
+      const threshold = 50; // px from bottom of screen
+      const windowHeight = window.innerHeight;
+      if (event.clientY > windowHeight - threshold) {
+        setShowBottomBar(true);
+      } else {
+        setShowBottomBar(false);
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const actionButtons = [
     { icon: Sword, label: "Battle", color: "bg-destructive", href: "/battle" },
+    //{ icon: Sword, label: "Battle Area", color: "bg-destructive", href: "/battlearea" },
     { icon: Heart, label: "Feed", color: "bg-success", href: "#" },
     { icon: Trophy, label: "Train", color: "bg-warning", href: "#" },
   ];
@@ -22,11 +41,14 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
       <header className="border-b-4 border-border bg-card/90 backdrop-blur-sm p-4">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between space-y-2">
           <h1 className="font-pixel text-xl text-gradient-primary">PIXEL REALM</h1>
           <div className="flex items-center space-x-4">
-            <span className="font-cyber text-sm text-muted-foreground">Player Level 5</span>
-            <div className="w-8 h-8 bg-gradient-primary border-2 border-primary rounded-full"></div>
+            <div className="flex flex-col items-start">
+              <span className="font-cyber text-sm text-muted-foreground">Player</span>
+              <span className="font-cyber text-xs text-muted-foreground">Level 5</span>
+            </div>
+            <div className="w-12 h-12 bg-gradient-primary border-2 border-primary rounded-full"></div>
           </div>
         </div>
       </header>
@@ -40,7 +62,7 @@ export default function Home() {
               <h2 className="font-pixel text-2xl mb-6 text-gradient-secondary">
                 Your Pet: Pixel
               </h2>
-              
+
               {/* Pet Container */}
               <div className="relative bg-muted/30 border-4 border-border p-8 mb-6 min-h-[300px] flex items-center justify-center">
                 <img 
@@ -49,7 +71,7 @@ export default function Home() {
                   className="w-48 h-48 object-contain pixel-perfect"
                   style={{ imageRendering: 'pixelated' }}
                 />
-                
+
                 {/* Pet Stats */}
                 <div className="absolute top-4 left-4 space-y-2">
                   <div className="bg-card/90 border-2 border-border px-3 py-1">
@@ -76,7 +98,7 @@ export default function Home() {
             <h3 className="font-pixel text-lg mb-4 text-center text-gradient-accent">
               Actions
             </h3>
-            
+
             <div className="space-y-3">
               {actionButtons.map((action, index) => (
                 <Button
@@ -100,7 +122,7 @@ export default function Home() {
             <h3 className="font-pixel text-lg mb-4 text-center text-accent">
               Stats
             </h3>
-            
+
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="font-cyber text-sm">Battles Won</span>
@@ -120,7 +142,7 @@ export default function Home() {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t-4 border-border p-4">
+      <div className={`fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t-4 border-border p-4 transition-transform duration-300 ${showBottomBar ? 'translate-y-0' : 'translate-y-full'}`}>
         <div className="container mx-auto">
           <div className="flex justify-around">
             {bottomNavItems.map((item, index) => (

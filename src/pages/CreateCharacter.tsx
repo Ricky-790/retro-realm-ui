@@ -18,7 +18,7 @@ import { uploadImageToIPFS, uploadToIPFS } from "@/lib/ipfs";
 import petDog from "@/assets/pet-dog.png";
 import petCat from "@/assets/pet-cat.png";
 import dragonFront from "@/assets/Dragon-front.jpg";
-import pandaFront from "@/assets/panda-front.jpg.jpg";
+import pandaFront from "@/assets/panda-front.jpg";
 import collarImg from "@/assets/accessories/collar.png";
 import hatImg from "@/assets/accessories/hat.png";
 import bowImg from "@/assets/accessories/bow.png";
@@ -38,7 +38,7 @@ const customizationOptions = {
 };
 
 const colors = [
-  "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", 
+  "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4",
   "#FFEAA7", "#DDA0DD", "#98D8C8", "#F7DC6F"
 ];
 
@@ -46,7 +46,7 @@ export default function CreateCharacter() {
   const [selectedPet, setSelectedPet] = useState("dog");
   const [selectedOptions, setSelectedOptions] = useState({
     ears: "Pointy",
-    eyes: "Blue", 
+    eyes: "Blue",
     tail: "Short",
     accessories: "None"
   });
@@ -65,34 +65,120 @@ export default function CreateCharacter() {
     "None": null
   };
 
-  // Custom styles for accessory overlays
-  const accessoryStyles: Record<string, React.CSSProperties> = {
-    Collar: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      width: '120px',
-      height: '40px',
-      transform: 'translate(-50%, -50%)',
+  // Updated accessory styles per pet type and accessory
+  const accessoryStyles: Record<string, Record<string, React.CSSProperties>> = {
+    dog: {
+      Collar: {
+        position: 'absolute',
+        top: '65%',
+        left: '50%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      Hat: {
+        position: 'absolute',
+        top: '15%',
+        left: '50%',
+        width: '90px',
+        height: '50px',
+        transform: 'translate(-50%, 0)',
+        rotate: '10deg',
+      },
+      Bow: {
+        position: 'absolute',
+        top: '25%',
+        left: '65%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      None: {},
     },
-    Hat: {
-      position: 'absolute',
-      top: '15%',
-      left: '50%',
-      width: '90px',
-      height: '50px',
-      transform: 'translate(-50%, 0)',
-      rotate: '10deg'
+    cat: {
+      Collar: {
+        position: 'absolute',
+        top: '63%',
+        left: '50%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      Hat: {
+        position: 'absolute',
+        top: '16%',
+        left: '50%',
+        width: '90px',
+        height: '50px',
+        transform: 'translate(-50%, 0)',
+        rotate: '10deg',
+      },
+      Bow: {
+        position: 'absolute',
+        top: '22%',
+        left: '62%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      None: {},
     },
-    Bow: {
-      position: 'absolute',
-      top: '25%',
-      left: '65%',
-      width: '60px',
-      height: '40px',
-      transform: 'translate(-50%, -50%)',
+    dragon: {
+      Collar: {
+        position: 'absolute',
+        top: '54%',
+        left: '50%',
+        width: '50px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      }, 
+      Hat: {
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        width: '90px',
+        height: '60px',
+        transform: 'translate(-50%, 0)',
+        rotate: '10deg',
+      },
+      Bow: {
+        position: 'absolute',
+        top: '30%',
+        left: '60%',
+        width: '50px',
+        height: '35px',
+        transform: 'translate(-50%, -50%)',
+      },
+      None: {},
     },
-    None: {},
+    panda: {
+      Collar: {
+        position: 'absolute',
+        top: '56%',
+        left: '50%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      Hat: {
+        position: 'absolute',
+        top: '14%',
+        left: '50%',
+        width: '85px',
+        height: '50px',
+        transform: 'translate(-50%, 0)',
+        rotate: '10deg',
+      },
+      Bow: {
+        position: 'absolute',
+        top: '24%',
+        left: '60%',
+        width: '60px',
+        height: '40px',
+        transform: 'translate(-50%, -50%)',
+      },
+      None: {},
+    },
   };
 
   const handleCreatePet = async () => {
@@ -106,20 +192,17 @@ export default function CreateCharacter() {
         useCORS: true
       });
 
-      // Build file name: petType-accessory.png
       const petType = selectedPet;
       const accessory = selectedOptions.accessories;
       const fileName = `${petType}-${accessory}.png`;
 
-      // Convert canvas to blob and create File with custom name
       const blob = await new Promise<Blob | null>(resolve => {
         canvas.toBlob(resolve, "image/png");
       });
       if (!blob) throw new Error("Failed to create image blob");
       const file = new File([blob], fileName, { type: "image/png" });
 
-      // Upload to IPFS
-  const url = await uploadToIPFS(file);
+      const url = await uploadToIPFS(file);
       setIpfsUrl(url);
       setShowDialog(true);
       toast.success(`Pet created and uploaded to IPFS!`);
@@ -134,7 +217,6 @@ export default function CreateCharacter() {
 
   return (
     <>
-      {/* Modal Dialog for IPFS URL */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
@@ -170,178 +252,176 @@ export default function CreateCharacter() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* ...existing code... */}
+
       <div className="min-h-screen bg-gradient-background p-4">
-      {/* Header */}
-      <header className="flex items-center justify-between mb-6">
-        <Button variant="pixel-outline" size="icon" asChild>
-          <Link to="/home">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-        </Button>
-        
-        <h1 className="font-pixel text-2xl md:text-3xl text-gradient-primary text-center">
-          Design Your Dream Pet
-        </h1>
-        
-        <div className="w-12"></div> {/* Spacer */}
-      </header>
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <Button variant="pixel-outline" size="icon" asChild>
+            <Link to="/home">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+          </Button>
 
-      <div className="container mx-auto max-w-6xl">
-        <div className="grid lg:grid-cols-12 gap-6">
-          {/* Pet Type Selector */}
-          <div className="lg:col-span-3">
-            <PixelCard className="h-fit">
-              <h3 className="font-pixel text-lg mb-4 text-center text-gradient-secondary">
-                Pet Type
-              </h3>
-              
-              <div className="space-y-3">
-                {petTypes.map((pet) => (
-                  <Button
-                    key={pet.id}
-                    variant={selectedPet === pet.id ? "pixel" : "pixel-outline"}
-                    size="lg"
-                    className="w-full justify-start"
-                    onClick={() => setSelectedPet(pet.id)}
-                  >
-                    {pet.icon ? <pet.icon className="w-5 h-5 mr-3" /> : null}
-                    {pet.name}
-                  </Button>
-                ))}
-              </div>
-            </PixelCard>
-          </div>
+          <h1 className="font-pixel text-2xl md:text-3xl text-gradient-primary text-center">
+            Design Your Dream Pet
+          </h1>
 
-          {/* Pet Preview */}
-          <div className="lg:col-span-6">
-            <PixelCard variant="glow" className="text-center">
-              <h3 className="font-pixel text-xl mb-6 text-gradient-accent">
-                Preview
-              </h3>
-              
-              <div 
-                ref={petPreviewRef}
-                className="relative bg-muted/30 border-4 border-border p-8 mb-6 min-h-[400px] flex items-center justify-center"
-              >
-                <div className="relative">
-                  <img 
-                    src={currentPetImage} 
-                    alt="Pet preview" 
-                    className="w-64 h-64 object-contain pixel-perfect"
-                    style={{ 
-                      imageRendering: 'pixelated',
-                      filter: `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)`
-                    }}
-                  />
-                  
-                  {/* Accessory Overlay */}
-                  {selectedOptions.accessories !== "None" && accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages] && (
+          <div className="w-12"></div> {/* Spacer */}
+        </header>
+
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-12 gap-6">
+            {/* Pet Type Selector */}
+            <div className="lg:col-span-3">
+              <PixelCard className="h-fit">
+                <h3 className="font-pixel text-lg mb-4 text-center text-gradient-secondary">
+                  Pet Type
+                </h3>
+
+                <div className="space-y-3">
+                  {petTypes.map((pet) => (
+                    <Button
+                      key={pet.id}
+                      variant={selectedPet === pet.id ? "pixel" : "pixel-outline"}
+                      size="lg"
+                      className="w-full justify-start"
+                      onClick={() => setSelectedPet(pet.id)}
+                    >
+                      {pet.icon ? <pet.icon className="w-5 h-5 mr-3" /> : null}
+                      {pet.name}
+                    </Button>
+                  ))}
+                </div>
+              </PixelCard>
+            </div>
+
+            {/* Pet Preview */}
+            <div className="lg:col-span-6">
+              <PixelCard variant="glow" className="text-center">
+                <h3 className="font-pixel text-xl mb-6 text-gradient-accent">
+                  Preview
+                </h3>
+
+                <div
+                  ref={petPreviewRef}
+                  className="relative bg-muted/30 border-4 border-border p-8 mb-6 min-h-[400px] flex items-center justify-center"
+                >
+                  <div className="relative">
                     <img
-                      src={accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages]!}
-                      alt={selectedOptions.accessories}
-                      className="pixel-perfect pointer-events-none"
+                      src={currentPetImage}
+                      alt="Pet preview"
+                      className="w-64 h-64 object-contain pixel-perfect"
                       style={{
-                        ...accessoryStyles[selectedOptions.accessories],
-                        imageRendering: 'inherit',
-                        filter: selectedOptions.accessories === "Collar"
-                          ? `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)`
-                          : 'none'
+                        imageRendering: 'pixelated',
+                        filter: `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)`
                       }}
                     />
-                  )}
-                </div>
-                
-                {/* Decorative UI Elements */}
-                <div className="absolute top-4 left-4 w-4 h-4 bg-primary border-2 border-primary-glow"></div>
-                <div className="absolute top-4 right-4 w-4 h-4 bg-secondary border-2 border-secondary-glow"></div>
-                <div className="absolute bottom-4 left-4 w-4 h-4 bg-accent border-2 border-accent-glow"></div>
-                <div className="absolute bottom-4 right-4 w-4 h-4 bg-warning border-2 border-warning"></div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="text-left">
-                  <p className="font-pixel text-xs text-muted-foreground mb-1">Name</p>
-                  <p className="font-cyber text-sm">Pixel Buddy</p>
-                </div>
-                <div className="text-left">
-                  <p className="font-pixel text-xs text-muted-foreground mb-1">Type</p>
-                  <p className="font-cyber text-sm capitalize">{selectedPet}</p>
-                </div>
-              </div>
+                    {/* Accessory Overlay */}
+                    {selectedOptions.accessories !== "None" && accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages] && (
+                      <img
+                        src={accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages]!}
+                        alt={selectedOptions.accessories}
+                        className="pixel-perfect pointer-events-none"
+                        style={{
+                          ...accessoryStyles[selectedPet][selectedOptions.accessories],
+                          imageRendering: 'inherit',
+                          filter: selectedOptions.accessories === "Collar"
+                            ? `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)`
+                            : 'none'
+                        }}
+                      />
+                    )}
+                  </div>
 
-              <Button 
-                variant="cta" 
-                size="xl" 
-                className="w-full" 
-                onClick={handleCreatePet}
-                disabled={isUploading}
-              >
-                {isUploading ? "Creating Pet..." : "Create Pet"}
-              </Button>
-            </PixelCard>
-          </div>
+                  {/* Decorative UI Elements */}
+                  <div className="absolute top-4 left-4 w-4 h-4 bg-primary border-2 border-primary-glow"></div>
+                  <div className="absolute top-4 right-4 w-4 h-4 bg-secondary border-2 border-secondary-glow"></div>
+                  <div className="absolute bottom-4 left-4 w-4 h-4 bg-accent border-2 border-accent-glow"></div>
+                  <div className="absolute bottom-4 right-4 w-4 h-4 bg-warning border-2 border-warning"></div>
+                </div>
 
-          {/* Customization Options */}
-          <div className="lg:col-span-3">
-            <PixelCard className="h-fit">
-              <h3 className="font-pixel text-lg mb-4 text-center text-gradient-accent">
-                Customize
-              </h3>
-              
-              <div className="space-y-6">
-                {Object.entries(customizationOptions).map(([category, options]) => (
-                  <div key={category}>
-                    <p className="font-pixel text-sm text-muted-foreground mb-2 capitalize">
-                      {category}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="text-left">
+                    <p className="font-pixel text-xs text-muted-foreground mb-1">Name</p>
+                    <p className="font-cyber text-sm">Pixel Buddy</p>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-pixel text-xs text-muted-foreground mb-1">Type</p>
+                    <p className="font-cyber text-sm capitalize">{selectedPet}</p>
+                  </div>
+                </div>
+
+                <Button
+                  variant="cta"
+                  size="xl"
+                  className="w-full"
+                  onClick={handleCreatePet}
+                  disabled={isUploading}
+                >
+                  {isUploading ? "Creating Pet..." : "Create Pet"}
+                </Button>
+              </PixelCard>
+            </div>
+
+            {/* Customization Options */}
+            <div className="lg:col-span-3">
+              <PixelCard className="h-fit">
+                <h3 className="font-pixel text-lg mb-4 text-center text-gradient-accent">
+                  Customize
+                </h3>
+
+                <div className="space-y-6">
+                  {Object.entries(customizationOptions).map(([category, options]) => (
+                    <div key={category}>
+                      <p className="font-pixel text-sm text-muted-foreground mb-2 capitalize">
+                        {category}
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {options.map((option) => (
+                          <Button
+                            key={option}
+                            variant={selectedOptions[category as keyof typeof selectedOptions] === option ? "pixel-accent" : "pixel-outline"}
+                            size="sm"
+                            className="text-xs"
+                            onClick={() => setSelectedOptions(prev => ({
+                              ...prev,
+                              [category]: option
+                            }))}
+                          >
+                            {option}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Color Picker */}
+                  <div>
+                    <p className="font-pixel text-sm text-muted-foreground mb-2">
+                      Color
                     </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {options.map((option) => (
-                        <Button
-                          key={option}
-                          variant={selectedOptions[category as keyof typeof selectedOptions] === option ? "pixel-accent" : "pixel-outline"}
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => setSelectedOptions(prev => ({
-                            ...prev,
-                            [category]: option
-                          }))}
-                        >
-                          {option}
-                        </Button>
+                    <div className="grid grid-cols-4 gap-2">
+                      {colors.map((color) => (
+                        <button
+                          key={color}
+                          className={`w-8 h-8 border-3 transition-all hover:scale-110 ${
+                            selectedColor === color
+                              ? "border-primary glow-primary"
+                              : "border-border"
+                          }`}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setSelectedColor(color)}
+                        />
                       ))}
                     </div>
                   </div>
-                ))}
-
-                {/* Color Picker */}
-                <div>
-                  <p className="font-pixel text-sm text-muted-foreground mb-2">
-                    Color
-                  </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {colors.map((color) => (
-                      <button
-                        key={color}
-                        className={`w-8 h-8 border-3 transition-all hover:scale-110 ${
-                          selectedColor === color 
-                            ? "border-primary glow-primary" 
-                            : "border-border"
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => setSelectedColor(color)}
-                      />
-                    ))}
-                  </div>
                 </div>
-              </div>
-            </PixelCard>
+              </PixelCard>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-      {/* ...existing code... */}
     </>
   );
 }

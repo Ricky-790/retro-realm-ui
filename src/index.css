@@ -206,4 +206,14 @@
   .bg-gradient-accent {
     background: var(--gradient-accent);
   }
+
+  .bg-forest-background {
+    background: linear-gradient(180deg, 
+      #a7f3d0 0%, 
+      #6ee7b7 20%, 
+      #34d399 40%, 
+      #10b981 60%, 
+      #059669 80%, 
+      #047857 100%);
+  }
 }
