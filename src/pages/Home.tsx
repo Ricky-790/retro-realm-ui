@@ -41,8 +41,17 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
       <header className="border-b-4 border-border bg-card/90 backdrop-blur-sm p-4">
-        <div className="container mx-auto flex items-center justify-between space-y-2">
+      <div className="container mx-auto flex items-center justify-between space-y-2">
+        <div className="flex items-center space-x-4">
           <h1 className="font-pixel text-xl text-gradient-primary">PIXEL REALM</h1>
+            <Link 
+            to="/leaderboard"
+            className="font-pixel text-sm text-gradient-accent hover:underline"
+            >
+              Leaderboard
+            </Link>
+          </div>
+
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-start">
               <span className="font-cyber text-sm text-muted-foreground">Player</span>
