@@ -5,24 +5,34 @@ import { ArrowLeft, Zap, Shield, Swords, Wifi, WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { io } from "socket.io-client";
+import { useGlobalContext } from "@/context";
 
 export default function BattleRoom() {
   const { battleId } = useParams();
-  console.log(battleId);
   const { toast } = useToast();
   const [status, setStatus] = useState("Connecting...");
   const [isConnected, setIsConnected] = useState(false);
   const [battleLogs, setBattleLogs] = useState<string[]>([]);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const { walletAddress } = useGlobalContext();
   // Simulate socket connection
   useEffect(() => {
     // connect to backend
+    console.log("Connecting to socket");
     const socket = io(`${BACKEND_URL}`); // adjust backend URL if deployed
 
     // join the game
-    socket.emit("joinGame", { battleId: battleId });
-
+    console.log("Joining game...");
+    socket.emit("joinGame", {
+      battleId: battleId,
+      playerAddress: walletAddress,
+      name: "Pikachu",
+      pokemonId: 2,
+      hp: 20,
+      moves: [],
+    });
+    console.log("Emitted");
     return () => {
       socket.disconnect();
     };

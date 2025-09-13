@@ -12,7 +12,7 @@ import Battle from "./pages/Battle";
 import BattleCreate from "./pages/BattleCreate";
 import BattleJoin from "./pages/BattleJoin";
 import BattleRoom from "./pages/BattleRoom";
-// import BattleArea from "./pages/BattleArea"; // Removed because module not found
+import BattleArea from "./pages/BattleArea"; // Removed because module not found
 import NotFound from "./pages/NotFound";
 import { GlobalContextProvider } from "./context";
 

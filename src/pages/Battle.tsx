@@ -28,8 +28,6 @@ export default function Battle() {
     });
     setIsCreating(false);
     navigate(`/battle/${battleId.data.battleId}`);
-
-    // Simulate API delay
   };
 
   return (

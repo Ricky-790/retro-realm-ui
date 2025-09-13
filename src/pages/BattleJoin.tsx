@@ -5,11 +5,27 @@ import { PixelCard } from "@/components/PixelCard";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ArrowLeft, Gamepad2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function BattleJoin() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [battleId, setBattleId] = useState("");
+
+  const checkRoomExists = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/battle/${battleId}/exists`);
+
+      if (response.ok) {
+        return { exists: true }; // { exists: true, battleState: {...}, canJoin: boolean }
+      } else {
+        return { exists: false };
+      }
+    } catch (error) {
+      console.error("Error checking battle:", error);
+      return { exists: false };
+    }
+  };
 
   const handleJoin = async () => {
     if (!battleId) {
@@ -20,8 +36,17 @@ export default function BattleJoin() {
       });
       return;
     }
-
-    navigate(`/battle/${battleId}`);
+    const res = await checkRoomExists();
+    if (!res.exists) {
+      toast({
+        title: "Battle Not Found",
+        description: "The Battle ID you entered does not exist.",
+        variant: "destructive",
+      });
+      return;
+    } else {
+      navigate(`/battle/${battleId}`);
+    }
   };
 
   return (
