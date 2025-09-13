@@ -4,35 +4,37 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, Zap, Shield, Swords, Wifi, WifiOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { io } from "socket.io-client";
 
 export default function BattleRoom() {
   const { battleId } = useParams();
+  console.log(battleId);
   const { toast } = useToast();
+  const [status, setStatus] = useState("Connecting...");
   const [isConnected, setIsConnected] = useState(false);
   const [battleLogs, setBattleLogs] = useState<string[]>([]);
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   // Simulate socket connection
   useEffect(() => {
-    // Simulate connecting to socket
-    const connectTimeout = setTimeout(() => {
-      setIsConnected(true);
-      toast({
-        title: "Connected to Battle Room",
-        description: `Battle ID: ${battleId}`,
-      });
-      setBattleLogs(prev => [...prev, `Connected to battle room ${battleId}`]);
-    }, 1000);
+    // connect to backend
+    const socket = io(`${BACKEND_URL}`); // adjust backend URL if deployed
 
-    return () => clearTimeout(connectTimeout);
-  }, [battleId, toast]);
+    // join the game
+    socket.emit("joinGame", { battleId: battleId });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [battleId]);
 
   // Simulate socket events
   const simulateSocketEvent = (eventType: string) => {
     const timestamp = new Date().toLocaleTimeString();
     const message = `[${timestamp}] Socket event: ${eventType}`;
-    
-    setBattleLogs(prev => [...prev, message]);
-    
+
+    setBattleLogs((prev) => [...prev, message]);
+
     toast({
       title: "Socket Event",
       description: `${eventType} sent`,
@@ -41,7 +43,7 @@ export default function BattleRoom() {
     // Simulate response after delay
     setTimeout(() => {
       const responseMessage = `[${timestamp}] Server response: ${eventType}_response`;
-      setBattleLogs(prev => [...prev, responseMessage]);
+      setBattleLogs((prev) => [...prev, responseMessage]);
     }, 500);
   };
 
@@ -55,7 +57,9 @@ export default function BattleRoom() {
       <header className="border-b-4 border-border bg-card/90 backdrop-blur-sm p-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-pixel text-xl text-gradient-primary">BATTLE ROOM</h1>
+            <h1 className="font-pixel text-xl text-gradient-primary">
+              BATTLE ROOM
+            </h1>
             <div className="flex items-center gap-2">
               {isConnected ? (
                 <Wifi className="w-5 h-5 text-green-500" />
@@ -85,13 +89,14 @@ export default function BattleRoom() {
               Battle Controls
             </h2>
             <p className="font-cyber text-sm mb-6 text-muted-foreground">
-              Battle ID: <span className="text-primary font-bold">{battleId}</span>
+              Battle ID:{" "}
+              <span className="text-primary font-bold">{battleId}</span>
             </p>
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <Button 
-                  variant="hero" 
+                <Button
+                  variant="hero"
                   className="flex-col h-20"
                   onClick={() => simulateSocketEvent("attack")}
                   disabled={!isConnected}
@@ -99,9 +104,9 @@ export default function BattleRoom() {
                   <Swords className="w-6 h-6 mb-1" />
                   <span className="font-pixel text-sm">Attack</span>
                 </Button>
-                
-                <Button 
-                  variant="pixel" 
+
+                <Button
+                  variant="pixel"
                   className="flex-col h-20"
                   onClick={() => simulateSocketEvent("defend")}
                   disabled={!isConnected}
@@ -111,8 +116,8 @@ export default function BattleRoom() {
                 </Button>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => simulateSocketEvent("special_move")}
                 disabled={!isConnected}
@@ -122,16 +127,16 @@ export default function BattleRoom() {
               </Button>
 
               <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => simulateSocketEvent("join_room")}
                   disabled={!isConnected}
                 >
                   Join Room
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => simulateSocketEvent("leave_room")}
                   disabled={!isConnected}
@@ -161,7 +166,10 @@ export default function BattleRoom() {
               ) : (
                 <div className="space-y-1">
                   {battleLogs.map((log, index) => (
-                    <div key={index} className="font-mono text-xs text-foreground">
+                    <div
+                      key={index}
+                      className="font-mono text-xs text-foreground"
+                    >
                       {log}
                     </div>
                   ))}

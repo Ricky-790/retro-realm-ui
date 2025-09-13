@@ -4,7 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Sword, Users } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 export default function Battle() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -18,20 +20,16 @@ export default function Battle() {
       description: "Setting up your battle room",
     });
 
-    // Simulate API delay
-    setTimeout(() => {
-      // Generate dummy battle ID
-      const battleId = Math.random().toString(36).substring(2, 15);
-      
-      toast({
-        title: "Battle Created!",
-        description: `Battle ID: ${battleId}`,
-      });
+    const battleId = await axios.get(`${BACKEND_URL}/battle/create`);
+    // console.log(battleId);
+    toast({
+      title: "Battle Created!",
+      description: `Battle ID: ${battleId.data.battleId}`,
+    });
+    setIsCreating(false);
+    navigate(`/battle/${battleId.data.battleId}`);
 
-      // Redirect to battle room
-      navigate(`/battle/${battleId}`);
-      setIsCreating(false);
-    }, 2000);
+    // Simulate API delay
   };
 
   return (
@@ -39,7 +37,9 @@ export default function Battle() {
       {/* Header */}
       <header className="border-b-4 border-border bg-card/90 backdrop-blur-sm p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <h1 className="font-pixel text-xl text-gradient-primary">PIXEL REALM</h1>
+          <h1 className="font-pixel text-xl text-gradient-primary">
+            PIXEL REALM
+          </h1>
           <Button variant="pixel-outline" size="sm" asChild>
             <Link to="/home">Back to Home</Link>
           </Button>
@@ -53,16 +53,16 @@ export default function Battle() {
             <h1 className="font-pixel text-4xl md:text-6xl mb-8 text-gradient-primary">
               Battle Arena
             </h1>
-            
+
             <p className="font-cyber text-lg mb-12 text-muted-foreground">
               Choose your battle mode and engage in epic pixel combat!
             </p>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <Button 
-                variant="hero" 
-                size="xl" 
-                className="h-24 flex-col" 
+              <Button
+                variant="hero"
+                size="xl"
+                className="h-24 flex-col"
                 onClick={handleCreateBattle}
                 disabled={isCreating}
               >
@@ -72,7 +72,12 @@ export default function Battle() {
                 </span>
               </Button>
 
-              <Button variant="pixel" size="xl" className="h-24 flex-col" asChild>
+              <Button
+                variant="pixel"
+                size="xl"
+                className="h-24 flex-col"
+                asChild
+              >
                 <Link to="/battle/join">
                   <Users className="w-8 h-8 mb-2" />
                   <span className="font-pixel">Join Battle</span>

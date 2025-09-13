@@ -1,16 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PixelCard } from "@/components/PixelCard";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { ArrowLeft, Gamepad2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BattleJoin() {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [battleId, setBattleId] = useState("");
+
+  const handleJoin = async () => {
+    if (!battleId) {
+      toast({
+        title: "Invalid Battle ID",
+        description: "Please enter a valid Battle ID.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    navigate(`/battle/${battleId}`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-background">
       {/* Header */}
       <header className="border-b-4 border-border bg-card/90 backdrop-blur-sm p-4">
         <div className="container mx-auto flex items-center justify-between">
-          <h1 className="font-pixel text-xl text-gradient-primary">PIXEL REALM</h1>
+          <h1 className="font-pixel text-xl text-gradient-primary">
+            PIXEL REALM
+          </h1>
           <Button variant="pixel-outline" size="sm" asChild>
             <Link to="/battle">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -27,26 +47,37 @@ export default function BattleJoin() {
             <h1 className="font-pixel text-3xl md:text-4xl mb-8 text-gradient-accent">
               Join a Battle
             </h1>
-            
+
             <p className="font-cyber text-lg mb-8 text-muted-foreground">
-              Enter the Battle ID provided by your opponent to join their battle.
+              Enter the Battle ID provided by your opponent to join their
+              battle.
             </p>
 
             {/* Join Form */}
             <div className="space-y-6">
               <div className="text-left">
-                <label htmlFor="battleId" className="block font-pixel text-sm mb-2 text-foreground">
+                <label
+                  htmlFor="battleId"
+                  className="block font-pixel text-sm mb-2 text-foreground"
+                >
                   Enter Battle ID
                 </label>
                 <Input
                   id="battleId"
                   type="text"
-                  placeholder="a7b8c9d0-e1f2-3456-7890-abcdef123456"
+                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   className="font-mono"
                 />
               </div>
 
-              <Button variant="hero" size="xl" className="w-full">
+              <Button
+                variant="hero"
+                size="xl"
+                className="w-full"
+                onClick={async () => {
+                  navigate(`/battle/${}`);
+                }}
+              >
                 <Gamepad2 className="w-6 h-6 mr-2" />
                 <span className="font-pixel">Join Battle</span>
               </Button>
