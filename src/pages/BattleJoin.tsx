@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PixelCard } from "@/components/PixelCard";
@@ -7,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function BattleJoin() {
   const navigate = useNavigate();
-  const toast = useToast();
+  const { toast } = useToast();
   const [battleId, setBattleId] = useState("");
 
   const handleJoin = async () => {
@@ -65,6 +66,8 @@ export default function BattleJoin() {
                 <Input
                   id="battleId"
                   type="text"
+                  value={battleId}
+                  onChange={(e) => setBattleId(e.target.value)}
                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   className="font-mono"
                 />
@@ -74,9 +77,7 @@ export default function BattleJoin() {
                 variant="hero"
                 size="xl"
                 className="w-full"
-                onClick={async () => {
-                  navigate(`/battle/${}`);
-                }}
+                onClick={handleJoin}
               >
                 <Gamepad2 className="w-6 h-6 mr-2" />
                 <span className="font-pixel">Join Battle</span>
