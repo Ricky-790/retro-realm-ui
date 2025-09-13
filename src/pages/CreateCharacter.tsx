@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
-import { uploadImageToIPFS } from "@/lib/ipfs";
+import { uploadImageToIPFS, uploadToIPFS } from "@/lib/ipfs";
 import petDog from "@/assets/pet-dog.png";
 import petCat from "@/assets/pet-cat.png";
+import dragonFront from "@/assets/Dragon-front.jpg";
+import pandaFront from "@/assets/panda-front.jpg.jpg";
 import collarImg from "@/assets/accessories/collar.png";
 import hatImg from "@/assets/accessories/hat.png";
 import bowImg from "@/assets/accessories/bow.png";
@@ -24,6 +26,8 @@ import bowImg from "@/assets/accessories/bow.png";
 const petTypes = [
   { id: "dog", name: "Dog", icon: Dog, image: petDog },
   { id: "cat", name: "Cat", icon: Cat, image: petCat },
+  { id: "dragon", name: "Dragon", icon: null, image: dragonFront },
+  { id: "panda", name: "Panda", icon: null, image: pandaFront },
 ];
 
 const customizationOptions = {
@@ -61,6 +65,36 @@ export default function CreateCharacter() {
     "None": null
   };
 
+  // Custom styles for accessory overlays
+  const accessoryStyles: Record<string, React.CSSProperties> = {
+    Collar: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      width: '120px',
+      height: '40px',
+      transform: 'translate(-50%, -50%)',
+    },
+    Hat: {
+      position: 'absolute',
+      top: '15%',
+      left: '50%',
+      width: '90px',
+      height: '50px',
+      transform: 'translate(-50%, 0)',
+      rotate: '10deg'
+    },
+    Bow: {
+      position: 'absolute',
+      top: '25%',
+      left: '65%',
+      width: '60px',
+      height: '40px',
+      transform: 'translate(-50%, -50%)',
+    },
+    None: {},
+  };
+
   const handleCreatePet = async () => {
     if (!petPreviewRef.current) return;
 
@@ -71,12 +105,25 @@ export default function CreateCharacter() {
         scale: 2,
         useCORS: true
       });
-      
-  const url = await uploadImageToIPFS(canvas);
-  setIpfsUrl(url);
-  setShowDialog(true);
-  toast.success(`Pet created and uploaded to IPFS!`);
-  console.log("IPFS URL:", url);
+
+      // Build file name: petType-accessory.png
+      const petType = selectedPet;
+      const accessory = selectedOptions.accessories;
+      const fileName = `${petType}-${accessory}.png`;
+
+      // Convert canvas to blob and create File with custom name
+      const blob = await new Promise<Blob | null>(resolve => {
+        canvas.toBlob(resolve, "image/png");
+      });
+      if (!blob) throw new Error("Failed to create image blob");
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      // Upload to IPFS
+  const url = await uploadToIPFS(file);
+      setIpfsUrl(url);
+      setShowDialog(true);
+      toast.success(`Pet created and uploaded to IPFS!`);
+      console.log("IPFS URL:", url);
     } catch (error) {
       console.error("Failed to create pet:", error);
       toast.error("Failed to create pet. Please check your Pinata API keys.");
@@ -158,7 +205,7 @@ export default function CreateCharacter() {
                     className="w-full justify-start"
                     onClick={() => setSelectedPet(pet.id)}
                   >
-                    <pet.icon className="w-5 h-5 mr-3" />
+                    {pet.icon ? <pet.icon className="w-5 h-5 mr-3" /> : null}
                     {pet.name}
                   </Button>
                 ))}
@@ -190,14 +237,15 @@ export default function CreateCharacter() {
                   
                   {/* Accessory Overlay */}
                   {selectedOptions.accessories !== "None" && accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages] && (
-                    <img 
+                    <img
                       src={accessoryImages[selectedOptions.accessories as keyof typeof accessoryImages]!}
                       alt={selectedOptions.accessories}
-                      className="absolute top-0 left-0 w-64 h-64 object-contain pixel-perfect pointer-events-none"
-                      style={{ 
-                        imageRendering: 'pixelated',
-                        filter: selectedOptions.accessories === "Collar" 
-                          ? `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)` 
+                      className="pixel-perfect pointer-events-none"
+                      style={{
+                        ...accessoryStyles[selectedOptions.accessories],
+                        imageRendering: 'inherit',
+                        filter: selectedOptions.accessories === "Collar"
+                          ? `hue-rotate(${colors.indexOf(selectedColor) * 45}deg)`
                           : 'none'
                       }}
                     />
