@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { PixelCard } from "@/components/PixelCard";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Zap, Shield, Swords, Wifi, WifiOff } from "lucide-react";
+import { ArrowLeft, Zap, Wifi, WifiOff } from "lucide-react";
+import dragonFront from "@/assets/Dragon-front.jpg";
+import pandaFront from "@/assets/panda-front.jpg";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { io } from "socket.io-client";
@@ -12,7 +14,13 @@ export default function BattleRoom() {
   const { toast } = useToast();
   const [status, setStatus] = useState("Connecting...");
   const [isConnected, setIsConnected] = useState(false);
-  const [battleLogs, setBattleLogs] = useState<string[]>([]);
+  const [battleLogs, setBattleLogs] = useState<string[]>([
+    "Player 1 joined!",
+    "Player 2 joined!", 
+    "Battle Starting !!!",
+    "DragonFly used Hydro Beam!",
+    "Pandabob took 15 damage!"
+  ]);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const { walletAddress } = useGlobalContext();
@@ -105,36 +113,53 @@ export default function BattleRoom() {
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="hero"
-                  className="flex-col h-20"
-                  onClick={() => simulateSocketEvent("attack")}
+                <button
+                  className="flex-col h-32 border-2 border-primary rounded-lg p-2 hover:border-accent transition-colors disabled:opacity-50"
+                  onClick={() => simulateSocketEvent("dragon_attack")}
                   disabled={!isConnected}
                 >
-                  <Swords className="w-6 h-6 mb-1" />
-                  <span className="font-pixel text-sm">Attack</span>
-                </Button>
+                  <img 
+                    src={dragonFront} 
+                    alt="DragonFly" 
+                    className="w-20 h-20 object-cover rounded mb-1"
+                  />
+                  <span className="font-pixel text-xs">DragonFly</span>
+                </button>
 
-                <Button
-                  variant="pixel"
-                  className="flex-col h-20"
-                  onClick={() => simulateSocketEvent("defend")}
+                <button
+                  className="flex-col h-32 border-2 border-primary rounded-lg p-2 hover:border-accent transition-colors disabled:opacity-50"
+                  onClick={() => simulateSocketEvent("panda_attack")}
                   disabled={!isConnected}
                 >
-                  <Shield className="w-6 h-6 mb-1" />
-                  <span className="font-pixel text-sm">Defend</span>
-                </Button>
+                  <img 
+                    src={pandaFront} 
+                    alt="Pandabob" 
+                    className="w-20 h-20 object-cover rounded mb-1"
+                  />
+                  <span className="font-pixel text-xs">Pandabob</span>
+                </button>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => simulateSocketEvent("special_move")}
-                disabled={!isConnected}
-              >
-                <Zap className="w-4 h-4 mr-2" />
-                Special Move
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="text-xs"
+                  onClick={() => simulateSocketEvent("hydro_beam")}
+                  disabled={!isConnected}
+                >
+                  <Zap className="w-3 h-3 mr-1" />
+                  Hydro Beam
+                </Button>
+                <Button
+                  variant="outline"
+                  className="text-xs"
+                  onClick={() => simulateSocketEvent("tail_smack")}
+                  disabled={!isConnected}
+                >
+                  <Zap className="w-3 h-3 mr-1" />
+                  Tail Smack
+                </Button>
+              </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <Button
