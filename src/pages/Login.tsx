@@ -60,28 +60,10 @@ export default function Login() {
                 onClick={() => handleWalletConnect("metamask")}
               >
                 <Wallet className="w-5 h-5 mr-3" />
-                MetaMask
+                Connect a Wallet
               </Button>
               
-              <Button 
-                variant="pixel-secondary" 
-                size="lg" 
-                className="w-full"
-                onClick={() => handleWalletConnect("walletconnect")}
-              >
-                <Smartphone className="w-5 h-5 mr-3" />
-                WalletConnect
-              </Button>
               
-              <Button 
-                variant="pixel-accent" 
-                size="lg" 
-                className="w-full"
-                onClick={() => handleWalletConnect("coinbase")}
-              >
-                <Wallet className="w-5 h-5 mr-3" />
-                Coinbase Wallet
-              </Button>
             </div>
           )}
 

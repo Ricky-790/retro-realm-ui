@@ -15,11 +15,7 @@ export default function BattleRoom() {
   const [status, setStatus] = useState("Connecting...");
   const [isConnected, setIsConnected] = useState(false);
   const [battleLogs, setBattleLogs] = useState<string[]>([
-    "Player 1 joined!",
-    "Player 2 joined!", 
-    "Battle Starting !!!",
-    "DragonFly used Hydro Beam!",
-    "Pandabob took 15 damage!"
+    
   ]);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -41,6 +37,14 @@ export default function BattleRoom() {
       moves: [],
     });
     console.log("Emitted");
+    socket.on("player joined", (playerNumber: number) => {
+      console.log("Player joined:", playerNumber);
+      setBattleLogs((prev) => [
+        ...prev,
+        `Player ${playerNumber} joined!`
+      ]);
+    });
+
     return () => {
       socket.disconnect();
     };
