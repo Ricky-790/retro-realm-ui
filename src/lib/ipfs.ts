@@ -1,7 +1,7 @@
 
 // Replace with your actual Pinata API keys
-const PINATA_API_KEY = "19b43211089848777257";
-const PINATA_SECRET_KEY = "4803cfc8fd33213df084e636a036bdc0263774bdc6444657b3797e1f16a18e70";
+const PINATA_API_KEY = "";
+const PINATA_SECRET_KEY = "";
 
 export const uploadToIPFS = async (file: File): Promise<string> => {
   const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
