@@ -5,7 +5,7 @@ import { ArrowLeft, Play } from "lucide-react";
 
 export function StatusBar() {
   const [started, setStarted] = useState(false);
-  const [timer, setTimer] = useState(180);
+  const [timer, setTimer] = useState(120);
 
   useEffect(() => {
     let interval;
@@ -22,7 +22,7 @@ export function StatusBar() {
   const handleStart = () => {
     if (!started) {
       setStarted(true);
-      setTimer(180);
+      setTimer(120);
     }
   };
 
@@ -31,7 +31,7 @@ export function StatusBar() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="pixel-outline" size="sm" asChild>
-            <Link to="/home">
+            <Link to="/battle/join">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Link>
@@ -44,7 +44,7 @@ export function StatusBar() {
               </>
             ) : (
               <>
-                Match Started: {timer}s
+                Time Left: {timer}s
               </>
             )}
           </Button>
